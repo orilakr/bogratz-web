@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Tab Web App</title>
+    <!-- Use Tailwind CSS for modern, responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        .video-thumbnail, .instagram-thumbnail {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .video-thumbnail:hover, .instagram-thumbnail:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        }
+        .playlists-container {
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+        .playlists-container::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, and Opera */
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .tab-button {
+            transition: background-color 0.3s, color 0.3s;
+            position: relative;
+        }
+        .tab-button.active {
+            font-weight: bold;
+            color: #1d4ed8; /* Blue-700 */
+        }
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #3b82f6; /* Blue-500 */
+            border-radius: 9999px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: fadeIn 0.3s ease-out;
+        }
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 25px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-button:hover, .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        /* Custom styles for the navigation links */
+        .nav-link {
+            transition: transform 0.2s;
+        }
+        .nav-link:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container">
+        <!-- Header and Tab Navigation -->
+        <header class="text-center py-8">
+            <h1 class="text-4xl font-extrabold text-blue-600 mb-2">Web Showcase</h1>
+            <p class="text-lg text-gray-600">Explore YouTube channels, view a public Google Calendar, or see an Instagram feed.</p>
+        </header>
+        
+        <!-- Tab Buttons -->
+        <div class="flex justify-center space-x-4 mb-8 border-b-2 border-gray-200">
+            <button id="youtubeTab" class="tab-button active px-4 py-2 text-gray-700 hover:text-blue-600">YouTube</button>
+            <button id="calendarTab" class="tab-button px-4 py-2 text-gray-700 hover:text-blue-600">Calendar</button>
+            <button id="instagramTab" class="tab-button px-4 py-2 text-gray-700 hover:text-blue-600">Instagram</button>
+            <button id="mapTab" class="tab-button px-4 py-2 text-gray-700 hover:text-blue-600">Map</button>
+            <button id="aboutTab" class="tab-button px-4 py-2 text-gray-700 hover:text-blue-600">About</button>
+        </div>
+
+        <!-- YouTube Channel Showcase Tab Content -->
+        <div id="youtubeSection">
+            <!-- Input and Button -->
+            <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-8">
+                <input type="text" id="channelInput" placeholder="Enter channel URL or ID..." class="w-full sm:w-1/2 p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                <button id="showButton" class="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors">Show Channel</button>
+            </div>
+
+            <!-- Main Content Area -->
+            <div id="contentContainer" class="hidden">
+                <!-- Channel Info & Main Video -->
+                <div class="bg-white rounded-xl shadow-lg p-6 mb-8 transition-all duration-300">
+                    <div id="channelInfo" class="flex items-center mb-6">
+                        <img id="channelThumbnail" class="w-16 h-16 rounded-full mr-4 border-2 border-blue-500 shadow-md" alt="Channel Thumbnail">
+                        <div>
+                            <h2 id="channelTitle" class="text-2xl font-bold text-gray-900"></h2>
+                            <p id="channelDescription" class="text-gray-500 text-sm mt-1"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="relative pb-[56.25%] h-0">
+                        <iframe id="mainVideo" class="absolute top-0 left-0 w-full h-full rounded-lg shadow-md" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <!-- More Videos Section -->
+                <div class="bg-white rounded-xl shadow-lg p-6 mb-8 transition-all duration-300">
+                    <h3 class="text-xl font-bold mb-4">Latest Videos</h3>
+                    <div id="moreVideosContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <!-- Video thumbnails will be dynamically inserted here -->
+                    </div>
+                </div>
+                
+                <!-- Playlists Section -->
+                <div class="bg-white rounded-xl shadow-lg p-6 transition-all duration-300">
+                    <h3 class="text-xl font-bold mb-4">Playlists</h3>
+                    <div id="playlistsContainer" class="flex space-x-4 overflow-x-auto pb-4">
+                        <!-- Playlist thumbnails will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading and Error States -->
+            <div id="statusMessage" class="flex flex-col items-center justify-center p-8">
+                <div id="loader" class="loader hidden"></div>
+                <p id="messageText" class="text-center text-lg text-gray-500 mt-4">Enter a YouTube channel URL or ID above.</p>
+            </div>
+        </div>
+        
+        <!-- Google Calendar Tab Content -->
+        <div id="calendarSection" class="hidden">
+            <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-8">
+                <input type="email" id="emailInput" placeholder="Enter Gmail address..." class="w-full sm:w-1/2 p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                <button id="showCalendarButton" class="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors">Show Calendar</button>
+            </div>
+
+            <div id="calendarDisplay" class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center min-h-[400px]">
+                <p class="text-center text-lg text-gray-500">Enter a public Gmail address above to display its calendar agenda.</p>
+            </div>
+        </div>
+        
+        <!-- Instagram Tab Content -->
+        <div id="instagramSection" class="hidden">
+            <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center min-h-[400px]">
+                <h3 class="text-xl font-bold mb-4">Instagram Feed</h3>
+                <p class="text-center text-gray-600 mb-6 max-w-lg">This section shows a live Instagram feed using the provided LightWidget iframe code.</p>
+                <div class="relative w-full overflow-hidden" style="padding-bottom: 120%;">
+                    <!-- LightWidget WIDGET --><script src="https://cdn.lightwidget.com/widgets/lightwidget.js"></script><iframe src="https://cdn.lightwidget.com/widgets/68ecd1fa6cdf5808a8e9853dd4e93885.html" scrolling="no" allowtransparency="true" class="lightwidget-widget" style="width:100%;border:0;overflow:hidden;"></iframe>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Tab Content -->
+        <div id="mapSection" class="hidden">
+            <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center min-h-[400px]">
+                <h3 id="mapAddressDisplay" class="text-xl font-bold text-gray-900 mb-4 text-center">אוהל ארי רעננה</h3>
+                <div id="mapDisplay" class="relative w-full flex-grow">
+                    <!-- Google Maps Iframe for the specific location -->
+                    <div class="relative w-full pb-[75%] h-0">
+                        <iframe 
+                            src="https://www.google.com/maps/embed/v1/place?key=YOUR_GOOGLE_MAPS_API_KEY&q=%D7%90%D7%95%D7%94%D7%9C%20%D7%90%D7%A8%D7%99%20%D7%A8%D7%A2%D7%A0%D7%A0%D7%94" 
+                            style="border:0" 
+                            class="absolute top-0 left-0 w-full h-full rounded-lg shadow-md" 
+                            frameborder="0" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+                </div>
+                
+                <!-- New Navigation Links -->
+                <div id="navLinksContainer" class="flex space-x-6 mt-6">
+                    <a id="wazeLink" href="https://www.waze.com/he/live-map/directions/%D7%91%D7%99%D7%AA-%D7%9B%D7%A0%D7%A1%D7%AA-%D7%90%D7%95%D7%94%D7%9C-%D7%90%D7%A8%D7%99-%D7%A8%D7%91%D7%95%D7%A6%D7%A7%D7%99-98-%D7%A8%D7%A2%D7%A0%D7%A0%D7%94?to=place.w.22872386.228658323.25339" target="_blank" class="nav-link">
+                         <!-- Waze SVG Icon -->
+                        <svg width="48" height="48" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="240" height="240" rx="40" fill="#33CCFF"/>
+                            <path d="M120 40C120 40 101.446 72.3333 113.844 100.957C126.242 129.58 147.284 135.244 147.284 135.244L147.284 174.195C147.284 174.195 137.95 198.816 117.959 199.166C97.9678 199.516 79.4137 186.442 75.3197 167.319L71.4913 150.111L62.7719 152.001L64.4026 159.202C70.6127 185.733 93.3644 207.166 120 207.166C146.636 207.166 169.387 185.733 175.597 159.202L177.228 152.001L168.508 150.111L164.68 167.319C160.586 186.442 142.032 199.516 122.04 199.166C102.049 198.816 92.7152 174.195 92.7152 174.195L92.7152 135.244C92.7152 135.244 113.758 129.58 126.156 100.957C138.554 72.3333 120 40 120 40ZM120 85.3333C125.86 85.3333 130.667 80.5262 130.667 74.6667C130.667 68.8071 125.86 64 120 64C114.14 64 109.333 68.8071 109.333 74.6667C109.333 80.5262 114.14 85.3333 120 85.3333Z" fill="white"/>
+                        </svg>
+                    </a>
+                    <a id="googleMapsLink" href="https://www.google.com/maps/dir//%D7%A8%D7%91%D7%95%D7%A6%D7%A7%D7%99+98,+%D7%A8%D7%A2%D7%A0%D7%A0%D7%94%E2%80%AD/@32.1851006,34.9567658,12z/data=!4m8!4m7!1m0!1m5!1m1!1s0x151d384257c2c93d:0xfb0ef622079ad09b!2m2!1d34.8867256!2d32.1851199!5m2!1e4!1e3?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="nav-link">
+                         <!-- Google Maps SVG Icon -->
+                        <svg width="48" height="48" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="240" height="240" rx="40" fill="#FF5722"/>
+                            <path d="M120 215.118C120 215.118 190.493 148.874 190.493 93.1238C190.493 54.0207 159.299 22.8262 120 22.8262C80.7011 22.8262 49.5066 54.0207 49.5066 93.1238C49.5066 148.874 120 215.118 120 215.118ZM120 123.676C137.986 123.676 152.645 109.017 152.645 91.0305C152.645 73.0441 137.986 58.3846 120 58.3846C102.014 58.3846 87.3547 73.0441 87.3547 91.0305C87.3547 109.017 102.014 123.676 120 123.676Z" fill="white"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- New About Tab Content -->
+        <div id="aboutSection" class="hidden">
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">About Us</h2>
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <p class="text-gray-700 mb-4">
+                            Welcome to our digital showcase! This platform was created to bring together various online resources in one convenient place. Our goal is to make it easy for you to explore different types of media, from video content to social media feeds and geographic locations, all without leaving the site.
+                        </p>
+                        <p class="text-gray-700 mb-4">
+                            We believe in the power of simple, clean design and seamless user experience. Whether you're here to check out the latest YouTube videos, see a public calendar, or find directions to a key location, we've designed this app to be intuitive and fast.
+                        </p>
+                        <p class="text-gray-700">
+                            Thank you for visiting! We hope you find this a useful tool for connecting with the online world. Feel free to explore the different tabs and see what each has to offer.
+                        </p>
+                    </div>
+                    <div class="space-y-4">
+                        <img src="https://placehold.co/600x400/3b82f6/ffffff?text=Our+Vision" alt="Vision Image" class="w-full h-auto object-cover rounded-lg shadow-md">
+                        <img src="https://placehold.co/600x400/1d4ed8/ffffff?text=Our+Team" alt="Team Image" class="w-full h-auto object-cover rounded-lg shadow-md">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // IMPORTANT: You must replace this placeholder with your own YouTube Data API key.
+        const YOUTUBE_API_KEY = "AIzaSyDfVOybkkeBltUcvKHk3LU_pzH3ASiH4BQ";
+        // IMPORTANT: You must replace this with your own Google Maps Embed API key to display a map.
+        const GOOGLE_MAPS_API_KEY = "YOUR_GOOGLE_MAPS_API_KEY";
+        
+        // DOM elements
+        const youtubeTab = document.getElementById('youtubeTab');
+        const calendarTab = document.getElementById('calendarTab');
+        const instagramTab = document.getElementById('instagramTab');
+        const mapTab = document.getElementById('mapTab');
+        const aboutTab = document.getElementById('aboutTab');
+        const youtubeSection = document.getElementById('youtubeSection');
+        const calendarSection = document.getElementById('calendarSection');
+        const instagramSection = document.getElementById('instagramSection');
+        const mapSection = document.getElementById('mapSection');
+        const aboutSection = document.getElementById('aboutSection');
+
+        // YouTube elements
+        const channelInput = document.getElementById('channelInput');
+        const showButton = document.getElementById('showButton');
+        const contentContainer = document.getElementById('contentContainer');
+        const statusMessage = document.getElementById('statusMessage');
+        const loader = document.getElementById('loader');
+        const messageText = document.getElementById('messageText');
+        const channelTitleEl = document.getElementById('channelTitle');
+        const channelDescriptionEl = document.getElementById('channelDescription');
+        const channelThumbnailEl = document.getElementById('channelThumbnail');
+        const mainVideoEl = document.getElementById('mainVideo');
+        const moreVideosContainer = document.getElementById('moreVideosContainer');
+        const playlistsContainer = document.getElementById('playlistsContainer');
+
+        // Calendar elements
+        const emailInput = document.getElementById('emailInput');
+        const showCalendarButton = document.getElementById('showCalendarButton');
+        const calendarDisplay = document.getElementById('calendarDisplay');
+        
+        // --- Tab Switching Logic ---
+        function showTab(tabName) {
+            // Hide all sections and deactivate all tabs
+            youtubeSection.classList.add('hidden');
+            calendarSection.classList.add('hidden');
+            instagramSection.classList.add('hidden');
+            mapSection.classList.add('hidden');
+            aboutSection.classList.add('hidden');
+            youtubeTab.classList.remove('active');
+            calendarTab.classList.remove('active');
+            instagramTab.classList.remove('active');
+            mapTab.classList.remove('active');
+            aboutTab.classList.remove('active');
+
+            // Show the selected tab and section
+            if (tabName === 'youtube') {
+                youtubeSection.classList.remove('hidden');
+                youtubeTab.classList.add('active');
+            } else if (tabName === 'calendar') {
+                calendarSection.classList.remove('hidden');
+                calendarTab.classList.add('active');
+            } else if (tabName === 'instagram') {
+                instagramSection.classList.remove('hidden');
+                instagramTab.classList.add('active');
+            } else if (tabName === 'map') {
+                mapSection.classList.remove('hidden');
+                mapTab.classList.add('active');
+            } else if (tabName === 'about') {
+                aboutSection.classList.remove('hidden');
+                aboutTab.classList.add('active');
+            }
+        }
+
+        youtubeTab.addEventListener('click', () => showTab('youtube'));
+        calendarTab.addEventListener('click', () => showTab('calendar'));
+        instagramTab.addEventListener('click', () => showTab('instagram'));
+        mapTab.addEventListener('click', () => showTab('map'));
+        aboutTab.addEventListener('click', () => showTab('about'));
+
+        // Initially show the YouTube tab
+        showTab('youtube');
+
+        // --- YouTube API Logic ---
+        /**
+         * Generic function to handle API calls with error checking.
+         * @param {string} url The API URL to fetch.
+         * @param {string} errorMessage The message to show on error.
+         * @returns {Promise<object>} The JSON data from the response.
+         */
+        const fetchApi = async (url, errorMessage) => {
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                // Check for common API errors
+                if (response.status === 403 || response.status === 400) {
+                    throw new Error("API Error: Please check your API key, it might be invalid, expired, or have exceeded its quota.");
+                } else {
+                    throw new Error(errorMessage || "An unexpected error occurred during API fetch.");
+                }
+            }
+            
+            const data = await response.json();
+            return data;
+        };
+
+        /**
+         * Fetches and displays YouTube channel data.
+         * This is the main function triggered by the button click.
+         */
+        const fetchChannelData = async () => {
+            const input = channelInput.value.trim();
+            if (!input) {
+                showMessage("Please enter a valid channel URL or ID.");
+                return;
+            }
+
+            // Show loading state
+            contentContainer.classList.add('hidden');
+            showLoader(true, "Fetching channel data...");
+
+            let channelId = null;
+
+            // Logic to extract channel ID from various URL formats or use the input as an ID
+            try {
+                const url = new URL(input);
+                if (url.hostname.includes('youtube.com')) {
+                    const path = url.pathname.split('/');
+                    
+                    // Check for /channel/ID format
+                    const channelIndex = path.indexOf('channel');
+                    if (channelIndex !== -1 && path[channelIndex + 1]) {
+                        channelId = path[channelIndex + 1];
+                    } 
+                    
+                    // Check for @handle format
+                    const handleIndex = path.findIndex(segment => segment.startsWith('@'));
+                    if (handleIndex !== -1 && path[handleIndex]) {
+                        const handle = path[handleIndex].substring(1); // Remove the @ symbol
+                        // Use the search endpoint to find the channel ID from the handle
+                        const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=id&q=${encodeURIComponent(handle)}&type=channel&key=${YOUTUBE_API_KEY}`;
+                        const searchData = await fetchApi(searchUrl, `Could not find a channel for the handle: @${handle}`);
+
+                        if (!searchData.items || searchData.items.length === 0) {
+                            showMessage(`Could not find a channel for the handle: @${handle}`);
+                            return;
+                        }
+
+                        channelId = searchData.items[0].id.channelId;
+                    }
+                }
+            } catch (e) {
+                // If it's not a valid URL, assume it's a channel ID
+                console.log("Input is not a URL, assuming it's a channel ID.");
+                channelId = input;
+            }
+
+            if (!channelId) {
+                showMessage("Could not determine a valid channel ID from the input.");
+                return;
+            }
+            
+            try {
+                // 1. Fetch channel details to get the uploads playlist ID
+                const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails&id=${channelId}&key=${YOUTUBE_API_KEY}`;
+                const channelData = await fetchApi(channelUrl, "Channel not found. Please check the ID or URL.");
+
+                if (!channelData.items || channelData.items.length === 0) {
+                    showMessage("Channel not found. Please check the ID or URL.");
+                    return;
+                }
+
+                const channel = channelData.items[0];
+                const uploadsPlaylistId = channel.contentDetails.relatedPlaylists.uploads;
+
+                // Update channel info in the UI
+                channelTitleEl.textContent = channel.snippet.title;
+                channelDescriptionEl.textContent = channel.snippet.description;
+                channelThumbnailEl.src = channel.snippet.thumbnails.high.url;
+                channelThumbnailEl.alt = `${channel.snippet.title} thumbnail`;
+
+                // 2. Fetch the latest videos from the uploads playlist
+                const videosUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,contentDetails&playlistId=${uploadsPlaylistId}&maxResults=9&key=${YOUTUBE_API_KEY}`;
+                const videosData = await fetchApi(videosUrl, "Could not fetch videos for this channel.");
+
+                if (!videosData.items) {
+                    showMessage("Could not fetch videos for this channel.");
+                    return;
+                }
+
+                // Clear previous videos and playlists
+                moreVideosContainer.innerHTML = '';
+                playlistsContainer.innerHTML = '';
+
+                // Display the latest video in the main player
+                const latestVideo = videosData.items[0];
+                if (latestVideo) {
+                    const latestVideoId = latestVideo.contentDetails.videoId;
+                    mainVideoEl.src = `https://www.youtube.com/embed/${latestVideoId}`;
+                } else {
+                    showMessage("No videos found on this channel.");
+                    return;
+                }
+
+                // Display more videos
+                videosData.items.slice(1).forEach(video => {
+                    if (video.contentDetails && video.snippet.thumbnails) {
+                        const videoId = video.contentDetails.videoId;
+                        const videoTitle = video.snippet.title;
+                        const thumbnailUrl = video.snippet.thumbnails.medium.url;
+
+                        const videoDiv = document.createElement('div');
+                        videoDiv.className = 'video-thumbnail rounded-lg overflow-hidden shadow-md bg-white';
+                        videoDiv.innerHTML = `
+                            <img src="${thumbnailUrl}" alt="${videoTitle}" class="w-full h-auto object-cover rounded-t-lg">
+                            <div class="p-4">
+                                <p class="font-semibold text-sm text-gray-900 truncate">${videoTitle}</p>
+                            </div>
+                        `;
+                        videoDiv.onclick = () => changeMainVideo(videoId);
+                        moreVideosContainer.appendChild(videoDiv);
+                    }
+                });
+
+                // 3. Fetch playlists for the channel
+                const playlistsUrl = `https://www.googleapis.com/youtube/v3/playlists?part=snippet&channelId=${channelId}&maxResults=10&key=${YOUTUBE_API_KEY}`;
+                const playlistsData = await fetchApi(playlistsUrl, "Could not fetch playlists for this channel.");
+
+                if (playlistsData.items) {
+                    playlistsData.items.forEach(playlist => {
+                        if (playlist.snippet.thumbnails) {
+                            const playlistTitle = playlist.snippet.title;
+                            const thumbnailUrl = playlist.snippet.thumbnails.medium.url;
+
+                            const playlistDiv = document.createElement('div');
+                            playlistDiv.className = 'flex-shrink-0 w-64 video-thumbnail rounded-lg overflow-hidden shadow-md bg-white';
+                            playlistDiv.innerHTML = `
+                                <img src="${thumbnailUrl}" alt="${playlistTitle}" class="w-full h-auto object-cover rounded-t-lg">
+                                <div class="p-4">
+                                    <p class="font-semibold text-sm text-gray-900 truncate">${playlistTitle}</p>
+                                </div>
+                            `;
+                            // You could add a click handler here to load the playlist contents
+                            playlistsContainer.appendChild(playlistDiv);
+                        }
+                    });
+                }
+                
+                // Show the content and hide the message
+                showLoader(false);
+                contentContainer.classList.remove('hidden');
+
+            } catch (error) {
+                console.error("Failed to fetch data:", error);
+                showMessage(error.message);
+            }
+        };
+
+        /**
+         * Changes the main video player to the selected video ID.
+         * @param {string} videoId The YouTube video ID.
+         */
+        const changeMainVideo = (videoId) => {
+            mainVideoEl.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        };
+
+        /**
+         * Shows or hides the loading spinner and a message.
+         * @param {boolean} isLoading True to show, false to hide.
+         * @param {string} message The message to display.
+         */
+        const showLoader = (isLoading, message = "") => {
+            if (isLoading) {
+                loader.classList.remove('hidden');
+                messageText.textContent = message;
+                statusMessage.classList.remove('hidden');
+            } else {
+                loader.classList.add('hidden');
+                statusMessage.classList.add('hidden');
+            }
+        };
+
+        /**
+         * Displays an error or status message.
+         * @param {string} message The message to display.
+         */
+        const showMessage = (message) => {
+            showLoader(false); // Hide loader if it's visible
+            messageText.textContent = message;
+            statusMessage.classList.remove('hidden');
+        };
+
+        // Event listener for the button
+        showButton.addEventListener('click', fetchChannelData);
+        // Also allow pressing Enter in the input field
+        channelInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                fetchChannelData();
+            }
+        });
+        
+        // --- Calendar Logic ---
+        const displayCalendar = () => {
+            const email = emailInput.value.trim();
+            if (!email) {
+                calendarDisplay.innerHTML = `<p class="text-center text-lg text-gray-500">Please enter a valid Gmail address.</p>`;
+                return;
+            }
+
+            // Encode the email address for the URL
+            const encodedEmail = encodeURIComponent(email);
+            const iframeSrc = `https://calendar.google.com/calendar/embed?src=${encodedEmail}&ctz=Asia%2FJerusalem&mode=AGENDA`;
+
+            calendarDisplay.innerHTML = `
+                <div class="relative w-full pb-[75%] h-0">
+                    <iframe 
+                        src="${iframeSrc}" 
+                        style="border:0" 
+                        class="absolute top-0 left-0 w-full h-full rounded-lg shadow-md" 
+                        frameborder="0" 
+                        scrolling="no">
+                    </iframe>
+                </div>
+            `;
+        };
+        
+        showCalendarButton.addEventListener('click', displayCalendar);
+        emailInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                displayCalendar();
+            }
+        });
+        
+    </script>
+</body>
+</html>
