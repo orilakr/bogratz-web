@@ -197,5 +197,5 @@ const displayCalendar = () => {
 
 
 // --- load content ---
-//displayCalendar()
+displayCalendar()
 fetchChannelData()
