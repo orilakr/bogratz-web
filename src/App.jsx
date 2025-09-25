@@ -1,14 +1,15 @@
 import { useState } from 'react'
 import './App.css'
+import './sidebar.jsx'
+import Sidebar from './sidebar.jsx'
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
-    <>
-      <h1 class="text-red-500">Vite + React</h1>
-      <button className="btn btn-info">Info</button>
-    </>
+    <div cassName="rtl:mr-0 rtl:ml-auto flex">
+      <Sidebar></Sidebar>
+    </div>
   )
 }
 
