@@ -1,1 +1,43 @@
 @import "tailwindcss";
+
+:root {
+    --yeshiva-bg: #FDFDFB;
+    --yeshiva-primary: #6F6E2E;
+    --yeshiva-accent: #CBA42B;
+}
+
+body {
+    background-color: var(--yeshiva-bg);
+}
+
+.text-yeshiva-primary {
+    color: var(--yeshiva-primary);
+}
+
+.text-yeshiva-accent {
+    color: var(--yeshiva-accent);
+}
+
+.bg-yeshiva-primary {
+    background-color: var(--yeshiva-primary);
+}
+
+.bg-yeshiva-accent {
+    background-color: var(--yeshiva-accent);
+}
+
+.border-yeshiva-primary {
+    border-color: var(--yeshiva-primary);
+}
+
+.border-yeshiva-accent {
+    border-color: var(--yeshiva-accent);
+}
+
+.hover\\:bg-yeshiva-primary:hover {
+    background-color: var(--yeshiva-primary);
+}
+
+.hover\\:text-yeshiva-accent:hover {
+    color: var(--yeshiva-accent);
+}
