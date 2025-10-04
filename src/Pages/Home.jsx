@@ -1,6 +1,6 @@
 import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "../components//card";
+import { Badge } from "../components/badge";
 import { Star, Users, BookOpen, Heart } from "lucide-react";
 
 const staffMembers = [

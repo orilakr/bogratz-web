@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "../components/card";
+import { Badge } from "../components/badge";
+import { Button } from "../components/button";
 import { Play, Clock, Eye, ExternalLink, Loader, AlertTriangle } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "../components/skeleton";
 
 const API_KEY = "AIzaSyDfVOybkkeBltUcvKHk3LU_pzH3ASiH4BQ";
 const CHANNEL_ID = "UCioZXW3oASlPs3WsWPtRgMA";
@@ -92,8 +92,8 @@ export default function Videos() {
                     onClick={() => setActivePlaylist({ id: UPLOADS_PLAYLIST_ID, title: "הכל" })}
                     variant={activePlaylist.title === "הכל" ? "default" : "outline"}
                     className={`rounded-full transition-all duration-300 ${activePlaylist.title === "הכל"
-                            ? 'bg-yeshiva-primary hover:bg-yeshiva-primary text-white'
-                            : 'border-yeshiva-primary text-yeshiva-primary hover:bg-yeshiva-primary hover:text-white'
+                        ? 'bg-yeshiva-primary hover:bg-yeshiva-primary text-white'
+                        : 'border-yeshiva-primary text-yeshiva-primary hover:bg-yeshiva-primary hover:text-white'
                         }`}
                 >
                     הכל
@@ -104,8 +104,8 @@ export default function Videos() {
                         onClick={() => setActivePlaylist({ id: playlist.id, title: playlist.snippet.title })}
                         variant={activePlaylist.id === playlist.id ? "default" : "outline"}
                         className={`rounded-full transition-all duration-300 ${activePlaylist.id === playlist.id
-                                ? 'bg-yeshiva-primary hover:bg-yeshiva-primary text-white'
-                                : 'border-yeshiva-primary text-yeshiva-primary hover:bg-yeshiva-primary hover:text-white'
+                            ? 'bg-yeshiva-primary hover:bg-yeshiva-primary text-white'
+                            : 'border-yeshiva-primary text-yeshiva-primary hover:bg-yeshiva-primary hover:text-white'
                             }`}
                     >
                         {playlist.snippet.title}

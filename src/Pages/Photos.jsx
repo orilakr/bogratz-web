@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/card";
 import { Instagram, ExternalLink, Heart, MessageCircle } from "lucide-react";
 
 export default function Photos() {
