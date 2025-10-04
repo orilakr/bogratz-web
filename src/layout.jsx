@@ -1,12 +1,12 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-// import {
-//     Home,
-//     Play,
-//     MapPin,
-//     Instagram,
-//     Calendar
-// } from "lucide-react";
+import {
+    Home,
+    Play,
+    MapPin,
+    Instagram,
+    Calendar
+} from "lucide-react";
 
 // function createPageUrl(pageName) {
 //     const location = useLocation();
@@ -15,28 +15,33 @@ import { Link, useLocation } from "react-router-dom";
 //     return url;
 // }
 
-const navigationItems = [
-    {
-        title: "דף הבית",
-        icon: Home,
-    },
-    {
-        title: "סרטונים",
-        icon: Play,
-    },
-    {
-        title: "הגעה לישיבה",
-        icon: MapPin,
-    },
-    {
-        title: "תמונות",
-        icon: Instagram,
-    },
-    {
-        title: "לוח אירועים",
-        icon: Calendar,
-    },
-];
+// const navigationItems = [
+//     {
+//         title: "דף הבית",
+//         url: createPageUrl("Home"),
+//         icon: Home,
+//     },
+//     {
+//         title: "סרטונים",
+//         url: createPageUrl("Videos"),
+//         icon: Play,
+//     },
+//     {
+//         title: "הגעה לישיבה",
+//         url: createPageUrl("Directions"),
+//         icon: MapPin,
+//     },
+//     {
+//         title: "תמונות",
+//         url: createPageUrl("Photos"),
+//         icon: Instagram,
+//     },
+//     {
+//         title: "לוח אירועים",
+//         url: createPageUrl("Events"),
+//         icon: Calendar,
+//     },
+// ];
 
 export default function Layout({ children, currentPageName }) {
     const location = useLocation();
