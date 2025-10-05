@@ -66,6 +66,7 @@ function App() {
                     key={item.title}
                     to={item.url}
                     className={`flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap ${location.pathname === item.url ? 'bg-yeshiva-primary text-white shadow-lg' : 'text-yeshiva-primary hover:bg-yeshiva-primary hover:text-white'}`}
+                    onClick={() => setActiveTab(item.url)}
                   >
                     <item.icon className="w-4 h-4" />
                     <span>{item.title}</span>

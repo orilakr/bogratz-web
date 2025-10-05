@@ -9,6 +9,8 @@ const API_KEY = "AIzaSyDfVOybkkeBltUcvKHk3LU_pzH3ASiH4BQ";
 const CHANNEL_ID = "UCioZXW3oASlPs3WsWPtRgMA";
 const UPLOADS_PLAYLIST_ID = "UUioZXW3oASlPs3WsWPtRgMA"; // Channel ID with UC -> UU
 
+// todo: can we make sure we load the content of the video pane only once instead of each time someone switched to the videos tab to avoid running out of api quota?
+
 export default function Videos() {
     const [videos, setVideos] = useState([]);
     const [playlists, setPlaylists] = useState([]);
