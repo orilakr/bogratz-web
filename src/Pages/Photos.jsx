@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/card";
 import { Button } from "../components/button";
-import { Instagram, ExternalLink, Heart, MessageCircle } from "lucide-react";
+import { Instagram, ExternalLink, Heart, MessageCircle, Users } from "lucide-react";
 
 export default function Photos() {
     useEffect(() => {
@@ -31,8 +31,9 @@ export default function Photos() {
                 <CardHeader>
                     <CardTitle className="flex items-center gap-3 text-green-700">
                         <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                            <MessageCircle className="w-6 h-6 text-white" />
                         </div>
-                        הצטרפו לקהילת הWhatsApp שלנו
+                        הצטרפו לקהילת WhatsApp שלנו
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="m-4">
@@ -44,9 +45,10 @@ export default function Photos() {
                         <a
                             href="https://chat.whatsapp.com/Kb7i33hxZEV13o0Hr9bY43?mode=ems_copy_c"
                             target="_blank"
-                            className="bg-green-500 hover:bg-green-600 text-white px-8 py-4 justify-center rounded-full font-bold text-lg transition-all duration-300 flex items-center gap-3 mx-auto shadow-lg hover:shadow-xl hover:scale-105"
+                            className="bg-green-500 hover:bg-green-600 text-white flex-wrap px-8 py-4 justify-center rounded-full font-bold text-lg transition-all duration-300 flex items-center gap-3 mx-auto shadow-lg hover:shadow-xl hover:scale-105"
                         >
                             הצטרפו לקהילה
+                            <Users className="w-6 h-6" />
                         </a>
                     </div>
                 </CardContent>
