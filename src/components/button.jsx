@@ -1,10 +1,7 @@
 import * as React from "react"
-// This dependency must be installed: npm install @radix-ui/react-slot
 import { Slot } from "@radix-ui/react-slot"
-// This dependency must be installed: npm install class-variance-authority
 import { cva } from "class-variance-authority"
 
-// NOTE: Update this path if your 'cn' utility is not here
 import { cn } from "./utils"
 
 const buttonVariants = cva(

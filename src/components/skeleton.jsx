@@ -1,27 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import * as React from "react"
+// NOTE: Adjust the import path if needed
+import { cn } from "./utils"
 
-const Skeleton = ({ children, className }) => {
-    const [loading, setLoading] = useState(true);
+function Skeleton({ className, ...props }) {
+    return (
+        <div
+            data-slot="skeleton"
+            className={cn("bg-accent animate-pulse rounded-md", className)}
+            {...props}
+        />
+    )
+}
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setLoading(false);
-        }, 1000);
-
-        return () => clearTimeout(timer);
-    }, []);
-
-    if (loading) {
-        return (
-            <div className={`skeleton ${className}`}>
-                <div className="h-4 bg-gray-200 rounded-md animate-pulse"></div>
-                <div className="h-4 mt-2 bg-gray-200 rounded-md animate-pulse"></div>
-                <div className="h-4 mt-2 bg-gray-200 rounded-md animate-pulse"></div>
-            </div>
-        );
-    }
-
-    return <div className={className}>{children}</div>;
-};
-
-export { Skeleton };
+export { Skeleton }
