@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+/* todo: fix hover warnings */
+
 :root {
     --yeshiva-bg: #FDFDFB;
     --yeshiva-primary: #6F6E2E;
