@@ -6,7 +6,7 @@ import { Button } from "../components/button";
 
 export default function Events() {
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-screen lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div className="text-center mb-12">
                 <h1 className="text-4xl md:text-5xl font-bold text-yeshiva-primary mb-6">
                     לוח אירועים

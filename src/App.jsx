@@ -44,10 +44,10 @@ const navigationItems = [
 function App() {
   const location = useLocation();
   return (
-    <div className="flex flex-col min-h-screen justify-between">
+    <div className="flex flex-col justify-between">
       {/* Header */}
       <header className="border-b border-gray-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-screen lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center items-center py-6">
             <h1 className="text-3xl md:text-4xl font-bold text-yeshiva-primary text-center">
               ישיבת צל"ש לבוגרי צבא ברעננה
@@ -58,15 +58,15 @@ function App() {
 
       {/* Navigation */}
       <nav className="border-b border-gray-200 bg-white/60 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-screen lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center">
             <div className="flex space-x-1 overflow-x-auto py-4">
               {navigationItems.map((item) => (
                 <Link
                   key={item.title}
                   to={item.url}
+                  // hover:bg-yeshiva-accent
                   className={`flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap ${location.pathname === item.url ? 'bg-yeshiva-primary text-white shadow-lg' : 'text-yeshiva-primary hover:bg-yeshiva-primary hover:text-white'}`}
-                  onClick={() => setActiveTab(item.url)}
                 >
                   <item.icon className="w-4 h-4" />
                   <span>{item.title}</span>
@@ -86,6 +86,8 @@ function App() {
         <Route path="/events" element={<Events />} />
       </Routes>
     </div>
+
+
   );
 }
 
